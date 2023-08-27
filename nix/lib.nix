@@ -3,6 +3,7 @@
   lib,
   pkgs,
   nixosConfigurations,
+  agePackage,
   ...
 }: let
   inherit
@@ -33,7 +34,7 @@
 
   # Collect all paths to enabled age plugins
   envPath = ''PATH="$PATH"${concatMapStrings (x: ":${escapeShellArg x}/bin") mergedAgePlugins}'';
-  # The identities which can decrypt secrets need to be passed to rage
+  # The identities which can decrypt secrets need to be passed to age
   masterIdentityArgs = concatMapStrings (x: "-i ${escapeShellArg x} ") mergedMasterIdentities;
   # Extra recipients for master encrypted secrets
   extraEncryptionPubkeys = concatStringsSep " " (map pubkeyOpt mergedExtraEncryptionPubkeys);
@@ -42,9 +43,9 @@ in {
   inherit mergedSecrets;
 
   # Premade shell commands to encrypt and decrypt secrets
-  rageMasterEncrypt = "${envPath} ${pkgs.rage}/bin/rage -e ${masterIdentityArgs} ${extraEncryptionPubkeys}";
-  rageMasterDecrypt = "${envPath} ${pkgs.rage}/bin/rage -d ${masterIdentityArgs}";
-  rageHostEncrypt = hostAttrs: let
+  ageMasterEncrypt = "${envPath} ${lib.getExe agePackage} -e ${masterIdentityArgs} ${extraEncryptionPubkeys}";
+  ageMasterDecrypt = "${envPath} ${lib.getExe agePackage} -d ${masterIdentityArgs}";
+  ageHostEncrypt = hostAttrs: let
     hostPubkey = removeSuffix "\n" hostAttrs.config.age.rekey.hostPubkey;
-  in "${envPath} ${pkgs.rage}/bin/rage -e ${pubkeyOpt hostPubkey}";
+  in "${envPath} ${lib.getExe agePackage} -e ${pubkeyOpt hostPubkey}";
 }

@@ -19,8 +19,8 @@
     (import ../nix/lib.nix inputs)
     userFlakeDir
     mergedSecrets
-    rageMasterEncrypt
-    rageMasterDecrypt
+    ageMasterEncrypt
+    ageMasterDecrypt
     ;
 
   relativeToFlake = filePath: let
@@ -104,7 +104,7 @@ in
     if [[ -e "$FILE" ]]; then
       [[ -z ''${INFILE+x} ]] || die "Refusing to overwrite existing file when using --input"
 
-      ${rageMasterDecrypt} -o "$CLEARTEXT_FILE" "$FILE" \
+      ${ageMasterDecrypt} -o "$CLEARTEXT_FILE" "$FILE" \
         || die "Failed to decrypt file. Aborting."
     else
       mkdir -p "$(dirname "$FILE")" \
@@ -132,7 +132,7 @@ in
       exit 0
     fi
 
-    ${rageMasterEncrypt} -o "$ENCRYPTED_FILE" "$CLEARTEXT_FILE" \
+    ${ageMasterEncrypt} -o "$ENCRYPTED_FILE" "$CLEARTEXT_FILE" \
       || die "Failed to (re)encrypt edited file, original is left unchanged."
     cp --no-preserve=all "$ENCRYPTED_FILE" "$FILE" # cp instead of mv preserves original attributes and permissions
 

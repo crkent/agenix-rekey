@@ -1,4 +1,4 @@
-self: appHostPkgs: nixosConfigurations: let
+self: appHostPkgs: nixosConfigurations: agePackage: let
   inherit
     (appHostPkgs.lib)
     flip
@@ -13,6 +13,7 @@ self: appHostPkgs: nixosConfigurations: let
     inherit self nixosConfigurations;
     inherit (appHostPkgs) lib;
     pkgs = appHostPkgs;
+    inherit agePackage;
   };
   apps = [
     ./_rekey-save-outputs.nix
